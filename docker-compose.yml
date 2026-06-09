@@ -1,0 +1,66 @@
+
+services:
+
+
+  oracle-db:
+    image: gvenzl/oracle-xe:21-slim
+    container_name: oracle-orbitalguard-rm564969
+    restart: unless-stopped
+
+    environment:
+      ORACLE_PASSWORD: ${ORACLE_ROOT_PASSWORD:-OracleRoot123}
+      APP_USER: ${ORACLE_APP_USER:-orbital_user}
+      APP_USER_PASSWORD: ${ORACLE_APP_PASSWORD:-OrbitalPwd123}
+      ORACLE_DATABASE: XEPDB1
+      TZ: America/Sao_Paulo
+
+    ports:
+      - "1521:1521"
+
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+      - ./sql:/container-entrypoint-initdb.d:ro
+
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 90s
+
+    networks:
+      - orbital_net
+
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: orbitalguard-api:1.0.0
+    container_name: app-orbitalguard-rm564969
+    restart: on-failure
+
+    depends_on:
+      oracle-db:
+        condition: service_healthy
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      TZ: America/Sao_Paulo
+      ConnectionStrings__OracleConnection: "User Id=${ORACLE_APP_USER:-orbital_user};Password=${ORACLE_APP_PASSWORD:-OrbitalPwd123};Data Source=oracle-db:1521/XEPDB1;"
+
+    ports:
+      - "8080:8080"
+
+    networks:
+      - orbital_net
+
+networks:
+  orbital_net:
+    driver: bridge
+    name: orbital_net_rm564969
+
+volumes:
+  oracle_data:
+    name: oracle_data_rm564969

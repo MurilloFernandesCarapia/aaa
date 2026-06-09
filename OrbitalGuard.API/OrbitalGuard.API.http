@@ -1,0 +1,6 @@
+@OrbitalGuard.API_HostAddress = http://localhost:5094
+
+GET {{OrbitalGuard.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
