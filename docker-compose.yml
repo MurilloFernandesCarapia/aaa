@@ -9,8 +9,6 @@ services:
 
     environment:
       ORACLE_PASSWORD: ${ORACLE_ROOT_PASSWORD:-OracleRoot123}
-      APP_USER: ${ORACLE_APP_USER:-orbital_user}
-      APP_USER_PASSWORD: ${ORACLE_APP_PASSWORD:-OrbitalPwd123}
       ORACLE_DATABASE: XEPDB1
       TZ: America/Sao_Paulo
 
