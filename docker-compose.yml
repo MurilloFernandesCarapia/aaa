@@ -9,7 +9,6 @@ services:
 
     environment:
       ORACLE_PASSWORD: ${ORACLE_ROOT_PASSWORD:-OracleRoot123}
-      ORACLE_DATABASE: XEPDB1
       TZ: America/Sao_Paulo
 
     ports:
